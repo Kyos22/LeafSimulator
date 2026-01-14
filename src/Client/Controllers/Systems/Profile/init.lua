@@ -22,14 +22,14 @@ local module = {} :: APIsType & Yumi.System
 
 --// Yumi
 module._Start = function()
-    Client.Player_Update_Profile.On(function(data: unknown)
+    Client.ProfileUpdated.On(function(data: unknown)
         Profile = data :: Profile
         ProfileObserver.Fire(ProfileObserver.Event.Updated, {
             Data = Profile
         } :: ProfileObserver.UpdatedEventArgs)
     end)
 
-    Profile = Client.Get_Profile.Call():Await() :: Profile
+    Profile = Client.GetProfile.Invoke() :: Profile
 end
 --// APIs
 module.Get = function()
@@ -37,7 +37,7 @@ module.Get = function()
 end
 module.GetAsync = function()
     if not Profile then
-        Profile = Client.Get_Profile.Call(true):Await() :: Profile
+        Profile = Client.GetProfile.Invoke() :: Profile
     end
     return Profile
 end

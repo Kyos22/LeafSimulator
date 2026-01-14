@@ -40,7 +40,7 @@ export type Type = Yumi.System & APIsType
 local Data = {} :: Type
 
 function Data:_Start()
-	Server.Get_Profile.SetCallback(function(player, async)
+	Server.GetProfile.On(function(player, async)
 		local data = if async then Data.GetAsync(player, false) else Data.Get(player, false)
 		return data
 	end)
@@ -196,7 +196,7 @@ function Data.Update(player: Player)
 		local success, message = pcall(function()
 			local profile = Profiles[player]
 			if profile then
-				Server.Player_Update_Profile.Fire(player, profile.Data)
+				Server.ProfileUpdated.Fire(player, profile.Data)
 			end
 		end)
 
