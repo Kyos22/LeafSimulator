@@ -38,13 +38,20 @@ local RarityColor = {
 export type LeafType = {
     Order: number,
 	Name: string,
+	Size: number,
     Image: string,
 	Rarity: string,
 	Weight: number,
 	Rate: number,
 }
 
+export type AreaType = {
+	Limited: number,
+	Cooldown: number
+}
+
 local module = {}
+
 module.Currency = Currency
 module.CurrencyVisual = CurrencyVisual
 module.Rarity = Rarity
