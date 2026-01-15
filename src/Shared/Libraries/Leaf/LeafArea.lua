@@ -2,18 +2,19 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Sift = require(ReplicatedStorage.Packages.Sift)
 local Enums = require(script.Parent.Enums)
+local CONSTANT = require(ReplicatedStorage.Shared.CONSTANT)
 
 local Id = {
-	Normal_Leaf = "Normal_Leaf",
-	Special_Leaf = "Special_Leaf",
+	Default = CONSTANT.TAG.AREA.DEFAULT,
+	OwoLeaf = CONSTANT.TAG.AREA.OWO_LEAF,
 }
 
 local Data = {
-	[Id.Normal_Leaf] = {
+	[Id.Default] = {
 		Limited = 100,
 		Cooldown = 3,
 	},
-	[Id.Special_Leaf] = {
+	[Id.OwoLeaf] = {
 		Limited = 70,
 		Cooldown = 5,
 	},

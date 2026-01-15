@@ -4,11 +4,17 @@ module.constructors = {}
 module.methods = {}
 module.metatable = { __index = module.methods }
 --// Services
+local CollectionService = game:GetService("CollectionService")
+
+--// Modules
+local mapFolder = workspace:WaitForChild("Map")
+local LeafArea = require(game.ReplicatedStorage.Shared.Libraries.Leaf.LeafArea)
 
 ----> Constructor
 export type Config = {
     Part1: BasePart,
 }
+
 local function prototype(self, config: Config)
     ---->> Public
     self.Part1 = config.Part1
@@ -39,8 +45,59 @@ end
 
 ---->> Private Functions
 
+local function FindSpawnLeafParts(folder: Instance): {BasePart}
+    local spawnLeafParts = {}
+
+    for _, child in ipairs(folder:GetChildren()) do
+        if child:IsA("BasePart") and child.Name == "Spawn_Leaf" then
+            table.insert(spawnLeafParts, child)
+        elseif child:IsA("Folder") or child:IsA("Model") then
+            local childParts = FindSpawnLeafParts(child)
+            for _, part in ipairs(childParts) do
+                table.insert(spawnLeafParts, part)
+            end
+        end
+    end
+
+    return spawnLeafParts
+end
+
+local function ProcessSpawnLeafParts(spawnLeafParts: {BasePart})
+    for _, part in ipairs(spawnLeafParts) do
+        local tags = CollectionService:GetTags(part)
+
+        for _, tag in ipairs(tags) do
+            local areaData = LeafArea.Get(tag)
+            if areaData then
+                part:SetAttribute("Limited", areaData.Limited)
+                part:SetAttribute("Cooldown", areaData.Cooldown)
+                break 
+            end
+        end
+    end
+end
+
 ---->> APIs
-function module.methods.Initialize(self: Type) end
+function module.methods.Initialize(self: Type, leafSystem: any)
+    local spawnLeafParts = FindSpawnLeafParts(mapFolder)
+    ProcessSpawnLeafParts(spawnLeafParts)
+
+    -- Start spawning for all areas
+    if leafSystem then
+        for _, part in ipairs(spawnLeafParts) do
+            leafSystem:StartAreaSpawning(part)
+        end
+    end
+end
+
+function module.methods.ResetAreaLimits(self: Type)
+    local spawnLeafParts = FindSpawnLeafParts(mapFolder)
+    ProcessSpawnLeafParts(spawnLeafParts)
+end
+
+function module.methods.GetSpawnLeafParts(self: Type): {BasePart}
+    return FindSpawnLeafParts(mapFolder)
+end
 
 function module.methods.Destroy(self: Type)
     local _p = self._private
@@ -64,6 +121,7 @@ function module.methods.Destroy(self: Type)
 
     table.clear(self :: any)
 end
+
 function module.methods.DoABC(self: Type)
     print("Super DoABC")
 end

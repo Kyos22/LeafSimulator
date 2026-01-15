@@ -43,6 +43,7 @@ export type LeafType = {
 	Rarity: string,
 	Weight: number,
 	Rate: number,
+	Area: string,
 }
 
 export type AreaType = {

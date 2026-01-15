@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Sift = require(ReplicatedStorage.Packages.Sift)
 local Enums = require(script.Parent.Parent.Enums)
 local Rarity = Enums.Rarity
+local CONSTANT = require(ReplicatedStorage.Shared.CONSTANT)
 
 local Id = {
 	Default_Leaf_Common = "Default_Leaf_Common",
@@ -21,6 +22,7 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.01,
 		Rate = 0.6,
+		Area = CONSTANT.TAG.AREA.DEFAULT
 	},
     [Id.Default_Leaf_Uncommon] = {
 		Order = 2,
@@ -30,6 +32,7 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.02,
 		Rate = 0.3,
+		Area = CONSTANT.TAG.AREA.DEFAULT
 	}, 
 	[Id.Default_Leaf_Rare] = {
 		Order = 3,
@@ -39,6 +42,7 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.03,
 		Rate = 0.15,
+		Area = CONSTANT.TAG.AREA.DEFAULT
 	}, 
 	[Id.Default_Leaf_Epic] = {
 		Order = 4,
@@ -48,6 +52,7 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.04,
 		Rate = 0.1,
+		Area = CONSTANT.TAG.AREA.DEFAULT
 	}, 
 	[Id.Default_Leaf_Legend] = {
 		Order = 5,
@@ -57,6 +62,7 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.05,
 		Rate = 0.05,
+		Area = CONSTANT.TAG.AREA.DEFAULT
 	}, 
 } :: { [string]: Enums.LeafType }
 
