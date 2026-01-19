@@ -58,7 +58,7 @@ local Features: YumiFeatures = {
 			},
 			["Leaf"] = {
 				Enabled = true,
-				Priority = 12,
+				Priority = 10,
 			},
 		},
 	},

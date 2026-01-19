@@ -14,9 +14,18 @@ local CONSTANT = require(game.ReplicatedStorage.Shared.CONSTANT)
 
 local leafFolder = ReplicatedStorage.Assets.Leaf
 
+local function GetLeafData(leafType: string)
+    for _, categoryData in pairs(Leaf.Data) do
+        if categoryData[leafType] then
+            return categoryData[leafType]
+        end
+    end
+    return nil
+end
+
 local function LeafTemplate(self: any)
     return function(leafType: string)
-        local leafData = Leaf.Data[leafType]
+        local leafData = GetLeafData(leafType)
         if not leafData then
             warn(`Leaf type {leafType} not found in data`)
             return nil
@@ -71,7 +80,6 @@ function module.constructors.new(config: Config?)
     local instance = {} :: any
     local self = setmetatable(prototype(instance, config :: Config), module.metatable)
 
-    -- Cache models for performance
     for _, model in ipairs(leafFolder:GetChildren()) do
         if model:IsA("Model") then
             local modelTags = CollectionService:GetTags(model)
@@ -90,16 +98,17 @@ end
 
 local function GetRandomLeafType(areaTag: string): string?
     local leafData = {}
-    for leafId, leafInfo in pairs(Leaf.Data) do
-
-        if leafInfo.Area == areaTag then
-            table.insert(leafData, {id = leafId, rate = leafInfo.Rate :: number})
+    for _, categoryData in pairs(Leaf.Data) do
+        for leafId, leafInfo in pairs(categoryData) do
+            if leafInfo.Area == areaTag then
+                table.insert(leafData, {id = leafId, rate = leafInfo.Rate :: number})
+            end
         end
     end
 
     if #leafData == 0 then
         return nil
-    end
+    end 
 
     local totalWeight = 0
     for _, data in ipairs(leafData) do
@@ -182,11 +191,10 @@ function module.methods.SpawnLeaf(self: Type, areaPart: BasePart): boolean
         return false
     end
 
-    leafInstance.CFrame = CFrame.new(GetRandomPositionInArea(areaPart))
-    leafInstance.Parent = workspace
+    leafInstance:PivotTo(CFrame.new(GetRandomPositionInArea(areaPart)))
+    leafInstance.Parent = areaPart
 
     leafInstance:SetAttribute("LeafType", leafType)
-    CollectionService:AddTag(leafInstance, CONSTANT.TAG.LEAF.LEAF)
 
     if _G.LEAF_DEBUG then
         print(`[LeafSystem] Spawned {leafType} at area {areaTag}`)

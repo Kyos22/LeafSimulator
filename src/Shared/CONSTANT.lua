@@ -1,8 +1,5 @@
 local CONSTANTS = {
 	TAG = {
-        LEAF = {
-            LEAF = "LEAF",
-        },
         AREA = {
             DEFAULT = "Default",
             OWO_LEAF = "OwO"
