@@ -5,5 +5,10 @@ local AreaSystem = require(script.Area)
 local leafSystem = LeafSystem.new({})
 local areaSystem = AreaSystem.new({})
 
-areaSystem:Initialize(leafSystem)
+while true do
+    areaSystem:Initialize(leafSystem)
+    task.wait(1)
+end
+
+
 

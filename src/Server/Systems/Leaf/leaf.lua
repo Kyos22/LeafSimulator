@@ -260,9 +260,9 @@ end
 function module.methods.Destroy(self: Type)
     local _p = self._private
 
-    for areaPart, taskThread in pairs(_p.activeSpawnTasks) do
-        task.cancel(taskThread)
-    end
+    -- for areaPart, taskThread in pairs(_p.activeSpawnTasks) do
+    --     task.cancel(taskThread)
+    -- end
     table.clear(_p.activeSpawnTasks)
 
     for _, data in ipairs(_p.tasks) do
