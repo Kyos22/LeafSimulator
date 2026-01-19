@@ -14,7 +14,7 @@ local CONSTANT = require(game.ReplicatedStorage.Shared.CONSTANT)
 
 local leafFolder = ReplicatedStorage.Assets.Leaf
 
-local function LeafTemplate()
+local function LeafTemplate(self: any)
     return function(leafType: string)
         local leafData = Leaf.Data[leafType]
         if not leafData then
@@ -23,20 +23,13 @@ local function LeafTemplate()
         end
 
         local areaTag = leafData.Area
+        local cachedModel = self._private.cachedModels[areaTag]
 
-        for _, model in ipairs(leafFolder:GetChildren()) do
-            if model:IsA("Model") then
-                local modelTags = CollectionService:GetTags(model)
-                for _, tag in ipairs(modelTags) do
-                    if tag == areaTag then
-                        local clonedModel = model:Clone()
-                        return clonedModel
-                    end
-                end
-            end
+        if cachedModel then
+            return cachedModel:Clone()
         end
 
-        warn(`No leaf model found for area tag: {areaTag}`)
+        warn(`No cached leaf model found for area tag: {areaTag}`)
         return nil
     end
 end
@@ -44,10 +37,11 @@ end
 ----> Constructor
 export type Config = {
     PoolSize: number?,
+    MaxSpawnAttempts: number?, 
 }
 local function prototype(self, config: Config)
     ---->> Public
-    self.LeafTemplate = LeafTemplate()
+    self.LeafTemplate = LeafTemplate(self)
 
     ---->> Private
     type field = {
@@ -55,12 +49,16 @@ local function prototype(self, config: Config)
         connections: { {Name: string, Connection: RBXScriptConnection} },
         activeSpawnTasks: { [BasePart]: thread },
         areaLimits: { [BasePart]: number },
+        cachedModels: { [string]: Model },
+        maxSpawnAttempts: number,
     }
     local _private = {
         tasks = {},
         connections = {},
         activeSpawnTasks = {},
         areaLimits = {},
+        cachedModels = {},
+        maxSpawnAttempts = config.MaxSpawnAttempts or 5,
     } :: field
     self._private = _private
 
@@ -73,7 +71,20 @@ module.constructors.methods = module.methods
 module.constructors.private = {}
 function module.constructors.new(config: Config?)
     config = config or {}
-    local self = setmetatable(prototype({} :: any, config :: Config), module.metatable)
+    local instance = {} :: any
+    local self = setmetatable(prototype(instance, config :: Config), module.metatable)
+
+    -- Cache models for performance
+    for _, model in ipairs(leafFolder:GetChildren()) do
+        if model:IsA("Model") then
+            local modelTags = CollectionService:GetTags(model)
+            for _, tag in ipairs(modelTags) do
+                if not self._private.cachedModels[tag] then
+                    self._private.cachedModels[tag] = model:Clone()
+                end
+            end
+        end
+    end
 
     return self :: Type
 end
@@ -117,9 +128,9 @@ local function GetRandomPositionInArea(areaPart: BasePart): Vector3
 
     local randomX = math.random(-size.X/2, size.X/2)
     local randomZ = math.random(-size.Z/2, size.Z/2)
-    local y = size.Y/2 + 1 
+    local surfaceY = size.Y/2 + 0.5
 
-    return cframe.Position + cframe.RightVector * randomX + cframe.UpVector * y + cframe.LookVector * randomZ
+    return (cframe * CFrame.new(randomX, surfaceY, randomZ)).Position
 end
 
 local function CanSpawnInArea(areaPart: BasePart): boolean
@@ -153,11 +164,13 @@ function module.methods.SpawnLeaf(self: Type, areaPart: BasePart): boolean
     end
 
     if not areaTag then
+        warn(`[LeafSystem] No valid area tag found for part: {areaPart.Name}`)
         return false
     end
 
     local leafType = GetRandomLeafType(areaTag)
     if not leafType then
+        warn(`[LeafSystem] No leaf type found for area tag: {areaTag}`)
         return false
     end
 
@@ -167,20 +180,19 @@ function module.methods.SpawnLeaf(self: Type, areaPart: BasePart): boolean
 
     local leafInstance = self.LeafTemplate(leafType)
     if not leafInstance then
+        warn(`[LeafSystem] Failed to create leaf instance for type: {leafType}`)
         return false
     end
+
     leafInstance.CFrame = CFrame.new(GetRandomPositionInArea(areaPart))
     leafInstance.Parent = workspace
 
     leafInstance:SetAttribute("LeafType", leafType)
-
     CollectionService:AddTag(leafInstance, CONSTANT.TAG.LEAF.LEAF)
 
-    task.delay(30, function() 
-        if leafInstance.Parent then
-            leafInstance:Destroy()
-        end
-    end)
+    if _G.LEAF_DEBUG then
+        print(`[LeafSystem] Spawned {leafType} at area {areaTag}`)
+    end
 
     return true
 end
@@ -189,6 +201,7 @@ function module.methods.StartAreaSpawning(self: Type, areaPart: BasePart)
     local _p = self._private
 
     if _p.activeSpawnTasks[areaPart] then
+        warn(`[LeafSystem] Spawn task already active for area part: {areaPart.Name}`)
         return
     end
 
@@ -205,11 +218,17 @@ function module.methods.StartAreaSpawning(self: Type, areaPart: BasePart)
     end
 
     if not areaTag or not areaData then
+        warn(`[LeafSystem] No valid area data found for part: {areaPart.Name}`)
         return
     end
 
     _p.activeSpawnTasks[areaPart] = task.spawn(function()
         while true do
+            -- Check if area part still exists in workspace to prevent memory leak
+            if not areaPart:IsDescendantOf(workspace) then
+                break
+            end
+
             if not CanSpawnInArea(areaPart) then
                 break
             end
@@ -230,13 +249,6 @@ function module.methods.StopAreaSpawning(self: Type, areaPart: BasePart)
     if taskThread then
         task.cancel(taskThread)
         _p.activeSpawnTasks[areaPart] = nil
-    end
-end
-
-function module.methods.StartAllAreaSpawning(self: Type, areaSystem: any)
-    local spawnLeafParts = areaSystem:GetSpawnLeafParts()
-    for _, part in ipairs(spawnLeafParts) do
-        self:StartAreaSpawning(part)
     end
 end
 
