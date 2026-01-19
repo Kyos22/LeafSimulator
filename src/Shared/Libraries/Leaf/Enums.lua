@@ -44,6 +44,7 @@ export type LeafType = {
 	Weight: number,
 	Rate: number,
 	Area: string,
+	Health: number,
 }
 
 export type AreaType = {

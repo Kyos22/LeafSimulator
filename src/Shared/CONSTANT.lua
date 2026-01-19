@@ -5,7 +5,7 @@ local CONSTANTS = {
         },
         AREA = {
             DEFAULT = "Default",
-            OWO_LEAF = "Owo"
+            OWO_LEAF = "OwO"
         },
     },
     Spawn_Behavior = {

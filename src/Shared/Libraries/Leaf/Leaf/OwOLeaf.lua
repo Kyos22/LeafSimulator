@@ -22,7 +22,8 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.01,
 		Rate = 0.6,
-		Area = CONSTANT.TAG.AREA.OWO_LEAF
+		Area = CONSTANT.TAG.AREA.OWO_LEAF,
+		Health = 5,
 	},
     [Id.OwO_Leaf_Uncommon] = {
 		Order = 2,
@@ -32,7 +33,8 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.02,
 		Rate = 0.3,
-		Area = CONSTANT.TAG.AREA.OWO_LEAF
+		Area = CONSTANT.TAG.AREA.OWO_LEAF,
+		Health = 5,
 	}, 
 	[Id.OwO_Leaf_Rare] = {
 		Order = 3,
@@ -42,7 +44,8 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.03,
 		Rate = 0.15,
-		Area = CONSTANT.TAG.AREA.OWO_LEAF
+		Area = CONSTANT.TAG.AREA.OWO_LEAF,
+		Health = 5,
 	}, 
 	[Id.OwO_Leaf_Epic] = {
 		Order = 4,
@@ -52,7 +55,8 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.04,
 		Rate = 0.1,
-		Area = CONSTANT.TAG.AREA.OWO_LEAF
+		Area = CONSTANT.TAG.AREA.OWO_LEAF,
+		Health = 5,
 	}, 
 	[Id.OwO_Leaf_Legend] = {
 		Order = 5,
@@ -62,7 +66,8 @@ local Data = {
 		Rarity = Rarity.Common,
 		Weight = 0.05,
 		Rate = 0.05,
-		Area = CONSTANT.TAG.AREA.OWO_LEAF
+		Area = CONSTANT.TAG.AREA.OWO_LEAF,
+		Health = 5,
 	}, 
 } :: { [string]: Enums.LeafType }
 
