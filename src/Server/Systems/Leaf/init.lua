@@ -9,22 +9,3 @@ local areaSystem = AreaSystem.new({})
 areaSystem:Initialize(leafSystem)
 
 
-
-
---!strict
---// Service
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
---// Modules
-local Yumi = require(ReplicatedStorage.Shared.Core.Yumi)
-
---
-export type APIsType = {}
-
-local module = {} :: APIsType & Yumi.System
-
---// Yumi
-
---// APIs
-
-
-return module
