@@ -132,9 +132,9 @@ local function GetRandomPositionInArea(areaPart: BasePart): Vector3
     local size = areaPart.Size
     local cframe = areaPart.CFrame
 
-    local randomX = math.random(-size.X/2, size.X/2)
-    local randomZ = math.random(-size.Z/2, size.Z/2)
-    local surfaceY = size.Y/2 + 0.5
+    local randomX = (math.random() - 0.5) * size.X
+    local randomZ = (math.random() - 0.5) * size.Z
+    local surfaceY = size.Y / 2 + 0.5
 
     return (cframe * CFrame.new(randomX, surfaceY, randomZ)).Position
 end
