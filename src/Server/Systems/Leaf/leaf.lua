@@ -153,6 +153,11 @@ local function DecrementAreaLimit(areaPart: BasePart): boolean
     return false
 end
 
+local function IncrementAreaLimit(areaPart: BasePart)
+    local currentLimit = areaPart:GetAttribute("Limited") or 0
+    areaPart:SetAttribute("Limited", (currentLimit :: number) + 1)
+end
+
 ---->> APIs
 function module.methods.Initialize(self: Type) end
 
@@ -198,6 +203,26 @@ function module.methods.SpawnLeaf(self: Type, areaPart: BasePart): boolean
 
     if _G.LEAF_DEBUG then
         print(`[LeafSystem] Spawned {leafType} at area {areaTag}`)
+    end
+
+    return true
+end
+
+function module.methods.CollectLeaf(self: Type, leafInstance: Model)
+    local _p = self._private
+
+    local spawnArea = leafInstance.Parent
+    if not spawnArea or not spawnArea:IsA("BasePart") or spawnArea.Name ~= "Spawn_Leaf" then
+        warn(`[LeafSystem] Leaf instance is not in a valid spawn area: {leafInstance.Name}`)
+        return false
+    end
+
+    IncrementAreaLimit(spawnArea)
+
+    leafInstance:Destroy()
+
+    if _G.LEAF_DEBUG then
+        print(`[LeafSystem] Collected leaf and incremented limit for area: {spawnArea.Name}`)
     end
 
     return true
@@ -260,9 +285,9 @@ end
 function module.methods.Destroy(self: Type)
     local _p = self._private
 
-    -- for areaPart, taskThread in pairs(_p.activeSpawnTasks) do
-    --     task.cancel(taskThread)
-    -- end
+    for areaPart, taskThread in pairs(_p.activeSpawnTasks) do
+        task.cancel(taskThread)
+    end
     table.clear(_p.activeSpawnTasks)
 
     for _, data in ipairs(_p.tasks) do
