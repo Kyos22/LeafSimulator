@@ -24,9 +24,6 @@ type name = string
 
 
 ----PlayerProfile
-
-
-
 event ProfileUpdated {
     From: Server,
     Type: Reliable,
@@ -37,4 +34,13 @@ event ProfileUpdated {
 function GetProfile {
     Yield: Coroutine,
     Return: (data, version?),
+}
+---- Tools -----
+scope Tools {
+
+    event Click {
+        From: Client,
+        Type: Reliable,
+        Call: ManyAsync,
+    }
 }

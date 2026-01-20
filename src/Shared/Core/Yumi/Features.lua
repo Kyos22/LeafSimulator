@@ -41,6 +41,10 @@ local Features: YumiFeatures = {
 				Enabled = true,
 				Priority = 20,
 			},
+			["Tools"] = {
+				Enabled = true,
+				Priority = 20,
+			},
 		},
 
 		Server = {
@@ -57,6 +61,10 @@ local Features: YumiFeatures = {
 				Priority = 10,
 			},
 			["Leaf"] = {
+				Enabled = true,
+				Priority = 12,
+			},
+			["Core"] = {
 				Enabled = true,
 				Priority = 10,
 			},

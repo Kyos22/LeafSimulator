@@ -159,5 +159,7 @@ export type name = string
 
 
 return {
+	Tools = {
+	},
 
 }

@@ -20,3 +20,8 @@ export declare const ProfileUpdated: {
 export declare const GetProfile: {
 	On: (Listener: (Player: Player, Value: void) => LuaTuple<[unknown, number | undefined]>) => void
 }
+export declare namespace Tools {
+	export const Click: {
+		On: (Listener: (Player: Player, Value: void) => void) => (() => void)
+	}
+}
