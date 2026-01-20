@@ -13,11 +13,18 @@ local Yumi = require(ReplicatedStorage.Shared.Core.Yumi)
 --
 export type APIsType = {}
 
-local module = {} :: APIsType & Yumi.System
+local module = {
+    
+} :: APIsType & Yumi.System
 
 --// Yumi
 
 --// APIs
-areaSystem:Initialize(leafSystem)
+function module:_Setup() end
+
+function module:_Start() 
+    areaSystem:Initialize(leafSystem)
+end
+
 
 return module

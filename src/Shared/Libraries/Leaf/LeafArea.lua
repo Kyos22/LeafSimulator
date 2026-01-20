@@ -6,7 +6,7 @@ local CONSTANT = require(ReplicatedStorage.Shared.CONSTANT)
 
 local Id = {
 	Default = CONSTANT.TAG.AREA.DEFAULT,
-	OwoLeaf = CONSTANT.TAG.AREA.OWO_LEAF,
+	OwOLeaf = CONSTANT.TAG.AREA.OWO_LEAF,
 }
 
 local Data = {
@@ -14,7 +14,7 @@ local Data = {
 		Limited = 100,
 		Cooldown = 3,
 	},
-	[Id.OwoLeaf] = {
+	[Id.OwOLeaf] = {
 		Limited = 70,
 		Cooldown = 5,
 	},

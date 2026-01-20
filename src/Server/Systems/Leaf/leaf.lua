@@ -139,6 +139,12 @@ local function GetRandomPositionInArea(areaPart: BasePart): Vector3
     return (cframe * CFrame.new(randomX, surfaceY, randomZ)).Position
 end
 
+local function GetRandomCFrameInArea(areaPart: BasePart): CFrame
+    local position = GetRandomPositionInArea(areaPart)
+    local randomYaw = math.random() * math.pi * 2 
+    return CFrame.new(position) * CFrame.Angles(0, randomYaw, 0)
+end
+
 local function CanSpawnInArea(areaPart: BasePart): boolean
     local currentLimit = areaPart:GetAttribute("Limited") or 0
     return (currentLimit :: number) > 0
@@ -196,7 +202,8 @@ function module.methods.SpawnLeaf(self: Type, areaPart: BasePart): boolean
         return false
     end
 
-    leafInstance:PivotTo(CFrame.new(GetRandomPositionInArea(areaPart)))
+    leafInstance:PivotTo(GetRandomCFrameInArea(areaPart))
+
     leafInstance.Parent = areaPart
 
     leafInstance:SetAttribute("LeafType", leafType)
