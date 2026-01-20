@@ -17,3 +17,8 @@ export declare const ProfileUpdated: {
 export declare const GetProfile: {
 	Invoke: (Value: void) => LuaTuple<[unknown, number | undefined]>
 }
+export declare namespace Tools {
+	export const Click: {
+		Fire: (Value: void) => void
+	}
+}
