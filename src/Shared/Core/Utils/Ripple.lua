@@ -1,12 +1,4 @@
---[[
 
-Sequence: Creates tween sequences
-Supports both looped and non-looped versions.
-
->> CREDITS <<
-Creator: SectorJack
-
-]]
 
 --// Services
 local RunService = game:GetService("RunService")
@@ -22,7 +14,7 @@ local heartbeatSignal = Signal.Wrap(RunService.Heartbeat)
 --// Types & Enums
 export type Ripple = {
 	Step: number,
-	Tweens: {any},
+	Tweens: { any },
 	isPlaying: boolean,
 	isPaused: boolean,
 	Looped: boolean,
@@ -31,8 +23,9 @@ export type Ripple = {
 	Stopped: any,
 	Paused: any,
 	Destroyed: any,
+	Sweeper: typeof(Sweeper.new()),
 
-	new: (tweens: {any}, looped: boolean) -> Ripple,
+	new: (tweens: { any }, looped: boolean) -> Ripple,
 	_Play: (self: Ripple, step: number, version: number) -> (),
 	_PlayNext: (self: Ripple, version: number) -> (),
 	_PlayCurrent: (self: Ripple, version: number) -> (),
@@ -45,7 +38,7 @@ export type Ripple = {
 }
 
 --// System
-local Ripple = {}
+local Ripple = {} :: Ripple
 Ripple.__index = Ripple
 
 function Ripple.new(tweens, looped: boolean)
@@ -55,6 +48,7 @@ function Ripple.new(tweens, looped: boolean)
 		isPlaying = false,
 		isPaused = false,
 		Looped = looped or false,
+		Sweeper = Sweeper.new(),
 
 		Started = Signal.new(),
 		Stopped = Signal.new(),
@@ -62,19 +56,17 @@ function Ripple.new(tweens, looped: boolean)
 		Destroyed = Signal.new(),
 
 		_version = 0,
-		_currentSweeper = nil,
 	}, Ripple)
 end
 
 function Ripple:_Play(step, version)
-	if version ~= self._version then return end
-
-	if self._currentSweeper then
-		self._currentSweeper:Sweep()
+	if version ~= self._version then
+		return
 	end
 
-	local sweeper = Sweeper.new()
-	self._currentSweeper = sweeper
+	local sweeper = self.Sweeper
+	sweeper:Sweep()
+
 	local tween = self.Tweens[step]
 
 	if typeof(tween) == "number" then
@@ -93,16 +85,18 @@ function Ripple:_Play(step, version)
 			end
 		end)
 		sweeper:Add(heartbeatConnection)
-
 	elseif typeof(tween) == "function" then
-		if version ~= self._version then return end
+		if version ~= self._version then
+			return
+		end
 		tween()
 		self:_PlayNext(version)
-
 	else
 		local tweenSignal = Signal.Wrap(tween.Completed)
 		local tweenConnection = tweenSignal:Connect(function()
-			if version ~= self._version then return end
+			if version ~= self._version then
+				return
+			end
 			sweeper:Sweep()
 			self:_PlayNext(version)
 		end)
@@ -119,18 +113,22 @@ function Ripple:_Play(step, version)
 		sweeper:Add(tweenConnection)
 		sweeper:Add(stoppedConnection)
 		sweeper:Add(pausedConnection)
+		sweeper:Add(tweenSignal, "Destroy")
 
 		tween:Play()
 	end
 end
 
 function Ripple:_PlayNext(version)
-	if version ~= self._version then return end
+	if version ~= self._version then
+		return
+	end
 	if (self.Step + 1) > #self.Tweens then
+		self:Stop()
 		if self.Looped then
+			--return
 			self.Step = 1
 		else
-			self:Stop()
 			return
 		end
 	else
@@ -155,10 +153,7 @@ function Ripple:Play()
 end
 
 function Ripple:Stop()
-	if self._currentSweeper then
-		self._currentSweeper:Sweep()
-		self._currentSweeper = nil
-	end
+	self.Sweeper:Sweep()
 	self.isPlaying = false
 	self.isPaused = false
 	self.Step = 0
