@@ -45,20 +45,20 @@ end
 ---->> Private Helper Functions
 
 -- Recursively finds all parts named "Spawn_Leaf" inside a folder/model
-local function FindSpawnLeafPartsRecursive(folder: Instance): {BasePart}
+local function FindAllSpawnLeafParts(root: Instance): {BasePart}
     local spawnLeafParts = {}
-    
-    for _, child in ipairs(folder:GetChildren()) do
-        if child:IsA("BasePart") and child.Name == "Spawn_Leaf" then
-            table.insert(spawnLeafParts, child)
-        elseif child:IsA("Folder") or child:IsA("Model") then
-            local childParts = FindSpawnLeafPartsRecursive(child)
-            for _, part in ipairs(childParts) do
-                table.insert(spawnLeafParts, part)
+
+    local function recurse(instance: Instance)
+        for _, child in instance:GetChildren() do
+            if child:IsA("BasePart") and child.Name == "Spawn_Leaf" then
+                table.insert(spawnLeafParts, child)
+            elseif child:IsA("Folder") or child:IsA("Model") then
+                recurse(child)
             end
         end
     end
-    
+
+    recurse(root)
     return spawnLeafParts
 end
 
@@ -66,25 +66,12 @@ end
 local function FindSpawnLeafParts(self): {BasePart}
     local _p = self._private
     
-    -- Return cached result if available
     if _p.spawnLeafParts then
         return _p.spawnLeafParts
     end
 
-    local spawnLeafParts = {}
-
-    for _, child in ipairs(mapFolder:GetChildren()) do
-        if child:IsA("BasePart") and child.Name == "Spawn_Leaf" then
-            table.insert(spawnLeafParts, child)
-        elseif child:IsA("Folder") or child:IsA("Model") then
-            local childParts = FindSpawnLeafPartsRecursive(child)
-            for _, part in ipairs(childParts) do
-                table.insert(spawnLeafParts, part)
-            end
-        end
-    end
-
-    -- Cache the result
+    local spawnLeafParts = FindAllSpawnLeafParts(mapFolder)
+    
     _p.spawnLeafParts = spawnLeafParts
     return spawnLeafParts
 end
