@@ -68,6 +68,10 @@ local Features: YumiFeatures = {
 				Enabled = true,
 				Priority = 10,
 			},
+			["World"] = {
+				Enabled = true,
+				Priority = 20,
+			},
 		},
 	},
 	Observers = {
