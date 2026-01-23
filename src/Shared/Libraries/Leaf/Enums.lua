@@ -27,6 +27,12 @@ local Rarity = {
 	Legendary = "Legendary",
 }
 
+local Scale = {
+	Small = 1,
+	Medium = 1.5,
+	Big = 2,
+}
+
 local RarityColor = {
 	[Rarity.Common] = Color3.fromRGB(125, 125, 125),
 	[Rarity.Uncommon] = Color3.fromRGB(93, 233, 111),
@@ -38,7 +44,7 @@ local RarityColor = {
 export type LeafType = {
     Order: number,
 	Name: string,
-	Size: number,
+	Scale: number,
     Image: string,
 	Rarity: string,
 	Weight: number,
@@ -58,6 +64,7 @@ module.Currency = Currency
 module.CurrencyVisual = CurrencyVisual
 module.Rarity = Rarity
 module.RarityColor = RarityColor
+module.Scale = Scale
 
 Sift.Dictionary.freezeDeep(module)
 return module
